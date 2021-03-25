@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/polyfill-uuid" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/filesystem" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/config" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/composer" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/dependency-injection" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/var-dumper" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/deprecation-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/psr/log" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/psr/container" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/polyfill-php80" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/polyfill-ctype" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/yaml" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/polyfill-mbstring" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/var-exporter" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/uid" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/codedungeon/php-cli-colors" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/service-contracts" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>

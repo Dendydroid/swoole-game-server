@@ -1,0 +1,22 @@
+version: '3.1'
+
+services:
+
+  php-server:
+    image: dendydroid/game-server
+    ports:
+      - "8443:8443"
+    volumes:
+      - './app:/var/www'
+    stdin_open: true
+    tty: true
+
+  client:
+    image: dendydroid/node-ssl-server
+    volumes:
+      - ./docker/node-ssl-server/src:/var/www/
+      - ./docker/node-ssl-server/certs:/etc/ssl/certs
+      - ./docker/node-ssl-server/private:/etc/ssl/private
+      - ./app/public:/var/www/public
+    ports:
+      - "443:443"

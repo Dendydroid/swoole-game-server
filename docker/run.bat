@@ -1,0 +1,1 @@
+docker run -d -p 80:80 -v /../app:/var/www --name php-server dendydroid/game-server

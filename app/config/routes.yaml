@@ -1,0 +1,6 @@
+routes:
+
+  main:
+    hello:
+      controller: 'App\Tcp\Controller\MainController'
+      method: 'main'

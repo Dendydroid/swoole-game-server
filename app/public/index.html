@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Game Client</title>
+</head>
+<body>
+
+
+<script>
+    let connection = new WebSocket('ws://127.0.0.1:8443/');
+
+    connection.onmessage = function (event) {
+        console.log(event);
+    };
+
+    let packet = {
+        route: "/main/hello",
+        data: {
+            name: "karen"
+        }
+    };
+
+    connection.onopen = (event) => {
+        console.log(packet);
+        connection.send(JSON.stringify(packet));
+    }
+</script>
+</body>
+</html>
