@@ -5,11 +5,37 @@ services:
   php-server:
     image: dendydroid/game-server
     ports:
-      - "8443:8443"
+      - 8443:8443
     volumes:
       - './app:/var/www'
     stdin_open: true
     tty: true
+    depends_on:
+      - cache
+
+  cache:
+    image: memcached
+    ports:
+      - 11211:11211
+    expose:
+      - 11211
+    entrypoint:
+      - memcached
+      - -m 1024
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASS}
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
 
   client:
     image: dendydroid/node-ssl-server
@@ -19,4 +45,4 @@ services:
       - ./docker/node-ssl-server/private:/etc/ssl/private
       - ./app/public:/var/www/public
     ports:
-      - "443:443"
+      - 443:443

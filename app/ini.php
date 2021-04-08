@@ -8,7 +8,7 @@ define("SERVICES_CONFIG_FILE", "./config/services.yaml");
 define("PROJECT_PATH", __DIR__);
 
 define("ERROR_ADDRESS_IN_USE", 98);
-define("SERVER_RESTART_TIMEOUT", 1);
+define("SERVER_RESTART_TIMEOUT", 3);
 define("MAX_SERVER_REQUESTS", 10);
 
 ini_set("log_errors", TRUE);

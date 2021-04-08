@@ -4,3 +4,8 @@ routes:
     hello:
       controller: 'App\Tcp\Controller\MainController'
       method: 'main'
+
+  debug:
+    get:
+      controller: 'App\Tcp\Controller\DebugController'
+      method: 'getDebug'

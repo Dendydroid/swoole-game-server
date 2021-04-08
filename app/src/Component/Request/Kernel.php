@@ -34,6 +34,8 @@ class Kernel
 
     public function run(Frame $frame)
     {
+        $route = null;
+
         try {
             $request = Json::array($frame->data);
 
@@ -46,7 +48,14 @@ class Kernel
             $route->getController()->$method($request["data"]);
         } catch (Throwable $exception) {
             error_log(ExceptionFormatter::toLogString($exception));
-            GameApplication::app()->push($frame->fd, Json::encode(Defaults::ROUTE_NOT_FOUND));
+            if ($route === null) {
+                GameApplication::app()->push($frame->fd, Json::encode(Defaults::ROUTE_NOT_FOUND));
+            } else {
+                GameApplication::app()->push($frame->fd, Json::encode([
+                    "status" => 500,
+                    "error" => ExceptionFormatter::toLogString($exception)
+                ]));
+            }
         }
     }
 }

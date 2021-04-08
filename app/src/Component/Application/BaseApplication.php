@@ -6,7 +6,6 @@ use App\Component\Connection\BaseConnection;
 use App\Component\Connection\ClientConnection;
 use App\Component\Container\Container;
 use App\Component\Exception\ExceptionFormatter;
-use App\Component\Server\BaseServer;
 use App\Component\Server\GameServer;
 use Swoole\Http\Request;
 use Swoole\WebSocket\Server;
@@ -52,7 +51,7 @@ abstract class BaseApplication
         return static::$container->has($key);
     }
 
-    public function loadServices(string $path)
+    public function loadServices(string $path): void
     {
         static::$container = new Container();
         try {
@@ -66,6 +65,22 @@ abstract class BaseApplication
     public static function getConnection(int $fd)
     {
         return static::$connections[$fd];
+    }
+
+    public static function getConnections(): array
+    {
+        $connections = [];
+
+        try {
+            $connections = static::$connections;
+        } catch (Throwable $exception) {
+        }
+        return $connections;
+    }
+
+    public static function getContainerData(): array
+    {
+        return self::$container->all();
     }
 
     public static function connect(Request $request, bool $force = false)

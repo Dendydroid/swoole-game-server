@@ -6,6 +6,6 @@
   "scripts": {
     "start": "nodemon -L -V index.php"
   },
-  "author": "",
+  "author": "Dendydroid",
   "license": "ISC"
 }

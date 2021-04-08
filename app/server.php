@@ -2,11 +2,9 @@
 
 require_once "vendor/autoload.php";
 
-use App\Cli\Reporter;
 use App\Component\Exception\ExceptionFormatter;
 use Codedungeon\PHPCliColors\Color;
 use Swoole\WebSocket\Server as SocketServer;
-
 
 $server = null;
 
@@ -18,10 +16,9 @@ while (is_null($server)) {
             sleep(SERVER_RESTART_TIMEOUT);
             continue;
         }
-        Reporter::reportMessage(ExceptionFormatter::toLogString($exception), Color::RED) and die();
+        \App\Cli\Reporter::reportMessage(ExceptionFormatter::toLogString($exception), Color::RED) and die();
     }
 }
-
 
 $server->set(
     [

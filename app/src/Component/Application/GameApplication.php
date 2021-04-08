@@ -4,6 +4,8 @@ namespace App\Component\Application;
 
 /**
  * @method static GameApplication app()
+ * @method static GameApplication processes()
+ * @method static GameApplication listeners()
  */
 class GameApplication extends BaseApplication
 {

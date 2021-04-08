@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Server Debug</title>
+
+    <style>
+        html{
+            height:100%;
+            padding: 0;
+            margin: 0;
+            font-family: sans-serif;
+        }
+        body{
+            height: 100%;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        #shelf{
+            width:100%;
+            margin:1rem;
+            border:1px dashed lightgray;
+        }
+        .shelf-row{
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-height: 30rem;
+        }
+        .shelf-cell{
+            border: 1px solid grey;
+            padding:.5rem;
+            max-height: 30rem;
+            overflow-y: auto;
+            width:100%;
+            height:100%;
+            background-color: lightcyan;
+            margin: .5rem;
+        }
+        .shelf-cell-title{
+            text-align: center;
+            margin: 0;
+        }
+        .shelf-cell-body{
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .shelf-cell-entry{
+            font-family: sans-serif;
+            font-weight: 400;
+            font-size: .8rem;
+        }
+        .bold-green{
+            font-weight: 600;
+            color:forestgreen;
+        }
+        .bold-conn{
+            font-weight: 600;
+            color:indianred;
+        }
+        .bold-gold{
+            font-weight: 600;
+            color:goldenrod;
+        }
+        .bold-simple{
+            font-weight: 600;
+            color:royalblue;
+        }
+        .bold-cache{
+            font-weight: 600;
+            color:brown;
+        }
+        .cell-center{
+            display: flex;
+            justify-content: center;
+        }
+        .cell-list{
+            display: flex;
+            justify-content: flex-start;
+            margin: .3rem 3rem;
+        }
+        .cell-child{
+            display: flex;
+            flex-direction: column;
+            margin: .3rem 3rem;
+        }
+    </style>
+</head>
+<body>
+
+<div id="shelf">
+    <div class="shelf-row">
+        <div class="shelf-cell">
+            <h5 class="shelf-cell-title">Processes:</h5>
+            <div class="shelf-cell-body" id="processes">
+            </div>
+        </div>
+        <div class="shelf-cell">
+            <h5 class="shelf-cell-title">Listeners:</h5>
+            <div class="shelf-cell-body" id="listeners">
+            </div>
+        </div>
+    </div>
+    <div class="shelf-row">
+        <div class="shelf-cell">
+            <h5 class="shelf-cell-title">Connections:</h5>
+            <div class="shelf-cell-body" id="connections">
+            </div>
+        </div>
+        <div class="shelf-cell">
+            <h5 class="shelf-cell-title">Cache:</h5>
+            <div class="shelf-cell-body" id="cache">
+            </div>
+        </div>
+    </div>
+    <div class="shelf-row">
+        <div class="shelf-cell">
+            <h5 class="shelf-cell-title">Container:</h5>
+            <div class="shelf-cell-body" id="container">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let connection = new WebSocket('ws://127.0.0.1:8443/');
+
+    connection.onmessage = function (event) {
+        let data = JSON.parse(event.data);
+        console.log("TCP data", data);
+        for(let listKey in data)
+        {
+            if(render[listKey])
+            {
+                render[listKey](data[listKey]);
+            }
+        }
+    };
+
+    let req = {
+        route: `/debug/get`,
+        data: {
+            key: `F*)T!*))!RTF!@#^$RT^@#^&`
+        }
+    };
+
+    console.log("Requesting for debug..", req)
+
+    connection.onopen = (event) => {
+        connection.send(JSON.stringify(req));
+    }
+
+    const render = {
+        processes: function(data) {
+            document.getElementById("processes").innerHTML = "";
+            for(let i in data)
+            {
+                document.getElementById("processes").innerHTML += `<div class="shelf-cell-entry bold-green cell-list">${data[i].name}</div>`;
+            }
+        },
+        listeners: function(data) {
+            document.getElementById("listeners").innerHTML = "";
+            for(let i in data)
+            {
+                document.getElementById("listeners").innerHTML += `<div class="shelf-cell-entry bold-gold cell-child">${data[i].name}: <pre>${JSON.stringify(data[i].listens)}</pre></div>`;
+            }
+        },
+        connections: function(data) {
+            document.getElementById("connections").innerHTML = "";
+            for(let i in data)
+            {
+                document.getElementById("connections").innerHTML += `<div class="shelf-cell-entry bold-conn cell-child"><pre>Connection #${JSON.stringify(data[i])}</pre></div>`;
+            }
+        },
+        container: function(data) {
+            document.getElementById("container").innerHTML = "";
+            for(let i in data)
+            {
+                document.getElementById("container").innerHTML += `<div class="shelf-cell-entry bold-simple cell-child"><pre>${JSON.stringify(data[i])}</pre></div>`;
+            }
+        },
+        cache: function(data) {
+            document.getElementById("cache").innerHTML = "";
+            for(let i in data)
+            {
+                document.getElementById("cache").innerHTML += `<div class="shelf-cell-entry bold-cache cell-child"><pre>${JSON.stringify(data[i])}</pre></div>`;
+            }
+        }
+    };
+</script>
+</body>
+</html>

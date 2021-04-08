@@ -23,6 +23,7 @@ class RouteResolver
                     new $controllerClass,
                     $route[static::METHOD_TAG]
                 );
+                $path = "";
                 continue;
             }
             static::walkRoutes($route, $result, $path);

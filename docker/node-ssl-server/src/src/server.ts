@@ -32,6 +32,10 @@ export class Server {
             res.sendFile("index.html");
         });
 
+        this.clientServer.get("/debug", (req, res) => {
+            res.sendFile(path.join(__dirname, "../public/debug.html"));
+        });
+
     }
 
     private getSettings(): void {

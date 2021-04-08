@@ -1,8 +1,7 @@
 {
   "verbose": false,
   "ignore": [
-    ".git",
-    ".idea"
+    "vendor"
   ],
   "execMap": {
     "php": "php"

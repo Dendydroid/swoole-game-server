@@ -11,6 +11,6 @@ class Json
 
     public static function array(string $json): array
     {
-        return json_decode($json, true);
+        return json_decode($json, true) ?? [];
     }
 }

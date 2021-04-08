@@ -4,9 +4,20 @@ ENV DEBIAN_FRONTEND noninteractive
 
 WORKDIR /var/www
 
-RUN apt-get update && apt install -y software-properties-common && add-apt-repository ppa:ondrej/php && \
-    apt-get update && apt-get install -y php8.0 php-pear vim php-dev libcurl3-openssl-dev php-cli php8.0-{bz2,curl,intl,mysql,mysqli,pgsql,fileinfo,readline,xml,gd,gettext,mbstring,exif,zip} unzip && \
-    pecl install swoole
+RUN apt-get update && apt install -y software-properties-common && add-apt-repository ppa:ondrej/php && apt-get update && apt-get install -y php8.0 php-pear vim php-dev libcurl3-openssl-dev unzip php-cli \
+    php8.0-common \
+    php8.0-bz2 \
+    php8.0-curl \
+    php8.0-intl \
+    php8.0-pgsql \
+    php8.0-memcached \
+    php8.0-readline \
+    php8.0-xml \
+    php8.0-gd \
+    php8.0-mbstring \
+    php8.0-zip
+
+RUN pecl install swoole
 
 RUN echo -e '\n extension=swoole.so' >> /etc/php/8.0/cli/php.ini
 
