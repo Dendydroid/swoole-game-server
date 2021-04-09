@@ -3,8 +3,6 @@
 namespace App\Component\Connection;
 
 use Swoole\Http\Request;
-use Symfony\Component\Uid\Uuid;
-use Symfony\Component\Uid\UuidV4;
 
 abstract class BaseConnection
 {
@@ -22,18 +20,11 @@ abstract class BaseConnection
         $this->created = time();
     }
 
-    /**
-     * @return int
-     */
     public function getCreated(): int
     {
         return $this->created;
     }
 
-    /**
-     * @param int $created
-     * @return BaseConnection
-     */
     public function setCreated(int $created): static
     {
         $this->created = $created;

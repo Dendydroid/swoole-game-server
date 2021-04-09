@@ -2,12 +2,21 @@
 
 namespace App\Component\Connection;
 
-use Swoole\Http\Request;
+use App\Component\Room\BaseRoom;
 
 class ClientConnection extends BaseConnection
 {
-    public function __construct(Request $request)
+    protected $activeRoom = null;
+
+    public function getActiveRoom()
     {
-        parent::__construct($request);
+        return $this->activeRoom;
+    }
+
+    public function setActiveRoom(BaseRoom $activeRoom): static
+    {
+        $this->activeRoom = $activeRoom;
+        $this->activeRoom->load($this);
+        return $this;
     }
 }

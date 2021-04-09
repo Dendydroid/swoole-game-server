@@ -83,7 +83,7 @@ abstract class BaseApplication
         return self::$container->all();
     }
 
-    public static function connect(Request $request, bool $force = false)
+    public static function connect(Request $request, bool $force = false): void
     {
         if (isset(static::$connections[$request->fd]) && !$force) {
             error_log("Connection $request->fd already exists!");
@@ -93,12 +93,12 @@ abstract class BaseApplication
         static::$connections[$request->fd] = new ClientConnection($request);
     }
 
-    public static function disconnect(int $fd)
+    public static function disconnect(int $fd): void
     {
         unset(static::$connections[$fd]);
     }
 
-    public function run()
+    public function run(): void
     {
         $this->server->init();
 

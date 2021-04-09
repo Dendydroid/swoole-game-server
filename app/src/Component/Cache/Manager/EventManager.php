@@ -8,32 +8,35 @@ use App\Tcp\Constant\CacheKeys;
 
 class EventManager
 {
-    public static function queue(BaseEvent $event): bool
-    {
-        $data = Cache::get(CacheKeys::EVENT_MANAGER_KEY); # Get existing data
-
-        $data[] = serialize($event); # Add a serialized event
-
-        return Cache::set(CacheKeys::EVENT_MANAGER_KEY, $data); # Update cache
-    }
-
     public static function getEvents()
     {
         return Cache::get(CacheKeys::EVENT_MANAGER_KEY);
     }
 
+    public static function updateEvents($data): bool
+    {
+        return Cache::set(CacheKeys::EVENT_MANAGER_KEY, $data);
+    }
+
+    public static function queue(BaseEvent $event): bool
+    {
+        $events = self::getEvents();
+
+        $events[] = serialize($event); # Add a serialized event
+
+        return self::updateEvents($events); # Update cache
+    }
+
     public static function dispose($eventItem): bool
     {
-        $events = Cache::get(CacheKeys::EVENT_MANAGER_KEY);
+        $events = self::getEvents();
 
-        foreach ($events as $key => $event)
-        {
-            if($eventItem === $event)
-            {
+        foreach ($events as $key => $event) {
+            if ($eventItem === $event) {
                 unset($events[$key]);
             }
         }
 
-        return Cache::set(CacheKeys::EVENT_MANAGER_KEY, $events);
+        return self::updateEvents($events);
     }
 }

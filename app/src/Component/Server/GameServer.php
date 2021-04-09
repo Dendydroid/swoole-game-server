@@ -23,27 +23,13 @@ class GameServer extends BaseServer
             'open',
             function (Server $server, Request $request) {
                 GameApplication::connect($request);
-//                $server->tick(
-//                    1000,
-//                    function () use ($server, $request) {
-//                        $server->push($request->fd, json_encode(["This took so much time g..s ", time()]));
-//                    }
-//                );
             }
         );
-//
-//        [
-//            new Route(
-//                "/main/test",
-//                MainController::class,
-//                "main"
-//            )
-//        ]
+
         $this->server->on(
             'message',
             function (Server $server, Frame $frame) {
                 (new Kernel())->run($frame);
-//                $server->push($frame->fd, json_encode(["!!!!!", time()]));
             }
         );
 
@@ -55,7 +41,7 @@ class GameServer extends BaseServer
         );
     }
 
-    public function run()
+    public function run(): void
     {
         $this->server->start();
     }

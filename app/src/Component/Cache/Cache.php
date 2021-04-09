@@ -28,6 +28,11 @@ class Cache
         return self::getInstance()->set($key, $value);
     }
 
+    public static function delete(string $key): bool
+    {
+        return self::getInstance()->delete($key);
+    }
+
     public static function keys(): bool|array
     {
         return self::getInstance()->getAllKeys();

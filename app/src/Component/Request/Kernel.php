@@ -32,7 +32,7 @@ class Kernel
         return null;
     }
 
-    public function run(Frame $frame)
+    public function run(Frame $frame): void
     {
         $route = null;
 
@@ -46,6 +46,7 @@ class Kernel
             $route->getController()->setFrame($frame);
 
             $route->getController()->$method($request["data"]);
+
         } catch (Throwable $exception) {
             error_log(ExceptionFormatter::toLogString($exception));
             if ($route === null) {

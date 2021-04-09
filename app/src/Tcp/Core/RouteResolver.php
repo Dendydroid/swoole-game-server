@@ -12,10 +12,14 @@ class RouteResolver
 
     public const METHOD_TAG = 'method';
 
-    private static function walkRoutes(array $routes, array &$result = [], string &$path = ""): array
+    private static function walkRoutes(array $routes, array &$result = [], string &$path = "", bool $firstRow = true): array
     {
         foreach ($routes as $domain => $route) {
-            $path .= "/$domain";
+            if ($firstRow) {
+                $path = "/$domain";
+            }else{
+                $path .= "/$domain";
+            }
             if (isset($route[static::CONTROLLER_TAG]) && $route[static::METHOD_TAG]) {
                 $controllerClass = $route[static::CONTROLLER_TAG];
                 $result[] = new Route(
@@ -23,10 +27,11 @@ class RouteResolver
                     new $controllerClass,
                     $route[static::METHOD_TAG]
                 );
-                $path = "";
+                $path = str_replace("/$domain", "", $path);
                 continue;
             }
-            static::walkRoutes($route, $result, $path);
+
+            static::walkRoutes($route, $result, $path, false);
         }
 
         return $result;
