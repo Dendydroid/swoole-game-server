@@ -5,7 +5,9 @@ require_once "vendor/autoload.php";
 require_once "ini.php";
 
 use App\Component\Application\GameApplication;
+use App\Component\Concurrent\Command\HelpCommand;
 use App\Component\Concurrent\Listener\TestListener;
+use App\Component\Concurrent\Process\CLIProcess;
 use App\Component\Concurrent\Process\DebugPingProcess;
 use App\Component\Concurrent\Process\EventInvokerProcess;
 use Symfony\Component\Dotenv\Dotenv;
@@ -28,6 +30,7 @@ GameApplication::set("listeners", $listeners);
 $processes = [
     new EventInvokerProcess(),
     new DebugPingProcess(),
+    new CLIProcess(),
 ];
 
 foreach ($processes as $process)
@@ -36,5 +39,11 @@ foreach ($processes as $process)
 }
 
 GameApplication::set("processes", $processes);
+
+$commands = [
+    new HelpCommand(),
+];
+
+GameApplication::set("commands", $commands);
 
 $app->run();

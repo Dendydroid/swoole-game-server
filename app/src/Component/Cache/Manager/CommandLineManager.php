@@ -4,11 +4,11 @@ namespace App\Component\Cache\Manager;
 
 use App\Tcp\Constant\CacheKeys;
 
-class EventManager extends BaseCacheQueue
+class CommandLineManager extends BaseCacheQueue
 {
     public function getCacheKey(): string
     {
-        return CacheKeys::EVENT_MANAGER_KEY;
+        return CacheKeys::COMMAND_MANAGER_KEY;
     }
 
 }

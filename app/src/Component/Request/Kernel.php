@@ -39,13 +39,22 @@ class Kernel
         try {
             $request = Json::array($frame->data);
 
+            $requestData = $request["data"];
+
             $route = $this->findRoute($request);
+
+            foreach ($route->middlewareResults($requestData) as $valid) {
+                if (!$valid) {
+                    return;
+                }
+            }
 
             $method = $route->getMethod();
 
-            $route->getController()->setFrame($frame);
-
-            $route->getController()->$method($request["data"]);
+            $route->getController()
+                ->setFrame($frame)
+                ->setConnection($frame->fd)
+                ->$method($requestData);
 
         } catch (Throwable $exception) {
             error_log(ExceptionFormatter::toLogString($exception));

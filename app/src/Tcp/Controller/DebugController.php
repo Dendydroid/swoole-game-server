@@ -7,12 +7,9 @@ use App\Tcp\Constant\Defaults;
 
 class DebugController extends BaseController
 {
-    public function getDebug(array $data)
+    public function getDebug(array $data): void
     {
-        if(isset($data['key']) && $_ENV['DEBUG_PASSWORD'] === $data['key'])
-        {
-            Cache::set("DEBUG_CONNECTION", $this->frame->fd);
-            $this->response(["debug" => Defaults::OK]);
-        }
+        Cache::set("DEBUG_CONNECTION", $this->frame->fd);
+        $this->response(["debug" => Defaults::OK]);
     }
 }

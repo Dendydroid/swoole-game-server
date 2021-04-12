@@ -13,15 +13,16 @@ abstract class BaseController
     public ?Frame $frame;
     public ?ClientConnection $connection;
 
-    public function setFrame(Frame $frame): void
+    public function setFrame(Frame $frame): static
     {
         $this->frame = $frame;
-        $this->setConnection($frame->fd);
+        return $this;
     }
 
-    public function setConnection(int $fd): void
+    public function setConnection(int $fd): static
     {
         $this->connection = GameApplication::getConnection($fd);
+        return $this;
     }
 
     public function response(array|string $data): void
