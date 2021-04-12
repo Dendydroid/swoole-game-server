@@ -2,3 +2,4 @@ vendor/
 composer.lock
 logs/*
 node_modules/
+.env
