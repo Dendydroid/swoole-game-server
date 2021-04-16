@@ -16,7 +16,7 @@ class DebugPingProcess extends BaseProcess
         return function ($process) use ($server) {
             while (true) {
                 sleep(1);
-                if ($debugConnection = Cache::get("DEBUG_CONNECTION")) {
+                if ($debugConnections = Cache::get("DEBUG_CONNECTIONS")) {
 
                     $processes = [];
                     $listeners = [];
@@ -39,7 +39,6 @@ class DebugPingProcess extends BaseProcess
                             "listens" => $listener->listeningTo(),
                         ];
                     }
-
                     /** @var ClientConnection $connection */
                     foreach (GameApplication::getConnections() as $connection)
                     {
@@ -66,13 +65,17 @@ class DebugPingProcess extends BaseProcess
                             "data" => Cache::get($k)
                         ];
                     }
-                    GameApplication::app()->push($debugConnection, Json::encode([
-                        "processes" => $processes,
-                        "listeners" => $listeners,
-                        "connections" => GameApplication::app()->getServer()->getClientList(0,100),
-                        "container" => $container,
-                        "cache" => $cache,
-                    ]));
+
+                    foreach ($debugConnections as $debugConnection)
+                    {
+                        GameApplication::app()->push($debugConnection, Json::encode([
+                            "processes" => $processes,
+                            "listeners" => $listeners,
+                            "connections" => $connections,//GameApplication::app()->getServer()->getClientList(0,100),
+                            "container" => $container,
+                            "cache" => $cache,
+                        ]));
+                    }
                 }
             }
         };

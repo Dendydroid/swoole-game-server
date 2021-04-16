@@ -12,7 +12,11 @@ class GameApplication extends BaseApplication
 {
     public function push(int $fd, string $data)
     {
-        return $this->getServer()->push($fd, $data);
+        if ($this->getServer()->confirm($fd)) {
+            return $this->getServer()->push($fd, $data);
+        }
+
+        return null;
     }
 
     /* Get item from container */

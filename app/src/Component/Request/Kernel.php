@@ -8,6 +8,7 @@ use App\Tcp\Helper\Json;
 use App\Tcp\Constant\Defaults;
 use App\Tcp\Core\Route;
 use App\Tcp\Core\RouteResolver;
+use JetBrains\PhpStorm\Pure;
 use Swoole\WebSocket\Frame;
 use Throwable;
 
@@ -20,7 +21,7 @@ class Kernel
         $this->routes = RouteResolver::resolve();
     }
 
-    private function findRoute(array $request): ?Route
+    #[Pure] private function findRoute(array $request): ?Route
     {
         /* @var Route $route */
         foreach ($this->routes as $route) {

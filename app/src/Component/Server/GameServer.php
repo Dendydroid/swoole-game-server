@@ -15,7 +15,7 @@ class GameServer extends BaseServer
         $this->server->on(
             "start",
             function (Server $server) {
-                echo "Swoole WebSocket Server is started at http://127.0.0.1:8443\n";
+                echo date("d-M-Y H:i:s") . " - Swoole WebSocket Server is started at http://127.0.0.1:8443\n";
             }
         );
 

@@ -8,7 +8,7 @@ define("SERVICES_CONFIG_FILE", "./config/services.yaml");
 define("PROJECT_PATH", __DIR__);
 
 define("ERROR_ADDRESS_IN_USE", 98);
-define("SERVER_RESTART_TIMEOUT", 3);
+define("SERVER_RESTART_TIMEOUT", 100000);
 define("MAX_SERVER_REQUESTS", 10);
 
 ini_set("log_errors", TRUE);
@@ -18,8 +18,8 @@ ini_set("error_log", PHP_ERROR_LOG_FILE);
 fclose(STDIN);
 fclose(STDOUT);
 fclose(STDERR);
+
 $STDIN = fopen('/dev/null', 'r');
 $STDOUT = fopen(PHP_STDOUT_FILE, 'wb');
 $STDERR = fopen(PHP_STDERR_FILE, 'wb');
-
 

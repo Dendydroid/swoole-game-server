@@ -4,5 +4,3 @@ services:
     autoconfigure: true
     public: true
 
-  App\Component\:
-    resource: '%kernel.project_dir%/src/Component/*'

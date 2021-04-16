@@ -10,31 +10,31 @@ class Cache
 
     public static function getInstance(): Memcached
     {
-        if (self::$memcached === null) {
-            self::$memcached = new Memcached();
-            self::$memcached->addServer('cache', 11211);
+        if (static::$memcached === null) {
+            static::$memcached = new Memcached();
+            static::$memcached->addServer('cache', 11211);
         }
 
-        return self::$memcached;
+        return static::$memcached;
     }
 
     public static function get(string $key)
     {
-        return self::getInstance()->get($key);
+        return static::getInstance()->get($key);
     }
 
     public static function set(string $key, $value): bool
     {
-        return self::getInstance()->set($key, $value);
+        return static::getInstance()->set($key, $value);
     }
 
     public static function delete(string $key): bool
     {
-        return self::getInstance()->delete($key);
+        return static::getInstance()->delete($key);
     }
 
     public static function keys(): bool|array
     {
-        return self::getInstance()->getAllKeys();
+        return static::getInstance()->getAllKeys();
     }
 }

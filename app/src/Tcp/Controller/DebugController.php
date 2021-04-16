@@ -9,7 +9,14 @@ class DebugController extends BaseController
 {
     public function getDebug(array $data): void
     {
-        Cache::set("DEBUG_CONNECTION", $this->frame->fd);
-        $this->response(["debug" => Defaults::OK]);
+        $debugConnections = Cache::get("DEBUG_CONNECTIONS");
+        if (!is_array($debugConnections)) {
+            $debugConnections = [];
+        }
+        if (!in_array($this->frame->fd, $debugConnections, true)) {
+            $debugConnections[] = $this->frame->fd;
+            Cache::set("DEBUG_CONNECTIONS", $debugConnections);
+            $this->response(["debug" => Defaults::OK]);
+        }
     }
 }

@@ -6,9 +6,9 @@ use App\Component\Room\BaseRoom;
 
 class ClientConnection extends BaseConnection
 {
-    protected $activeRoom = null;
+    protected ?BaseRoom $activeRoom;
 
-    public function getActiveRoom()
+    public function getActiveRoom(): ?BaseRoom
     {
         return $this->activeRoom;
     }

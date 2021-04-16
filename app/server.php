@@ -2,21 +2,23 @@
 
 require_once "vendor/autoload.php";
 
-use App\Component\Exception\ExceptionFormatter;
-use Codedungeon\PHPCliColors\Color;
+use App\Component\Cache\MultiThreadModel;
 use Swoole\WebSocket\Server as SocketServer;
 
 $server = null;
 
-while (is_null($server)) {
+$createServer = static function() {
+    return new SocketServer("0.0.0.0", 8443);
+};
+
+while (!($server instanceof SocketServer)) {
     try {
-        $server = new SocketServer("0.0.0.0", 8443);
+        $server = MultiThreadModel::getOrCreate(SocketServer::class, $createServer);
     } catch (Throwable $exception) {
         if ($exception->getCode() === ERROR_ADDRESS_IN_USE) {
-            sleep(SERVER_RESTART_TIMEOUT);
+            usleep(SERVER_RESTART_TIMEOUT);
             continue;
         }
-        \App\Cli\Reporter::reportMessage(ExceptionFormatter::toLogString($exception), Color::RED) and die();
     }
 }
 
