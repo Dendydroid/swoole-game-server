@@ -14,6 +14,11 @@ final class Defaults
         "message" => "OK"
     ];
 
+    public const UNAUTHORIZED = [
+        "status" => 401,
+        "message" => "Unauthorized"
+    ];
+
     public static function encode(string $item): string
     {
         return json_encode($item, JSON_PRETTY_PRINT);

@@ -14,6 +14,11 @@ abstract class BaseCacheQueue extends Singleton
         return Cache::get($this->getCacheKey());
     }
 
+    public function flush(): bool
+    {
+        return Cache::set($this->getCacheKey(), []);
+    }
+
     public function updateList($data): bool
     {
         return Cache::set($this->getCacheKey(), $data);
@@ -32,6 +37,10 @@ abstract class BaseCacheQueue extends Singleton
     {
         $list = $this->getList();
 
+        if (is_bool($list)) {
+            $list = [];
+        }
+
         foreach ($list as $key => $item) {
             if ($deleteItem === $item) {
                 unset($list[$key]);
@@ -39,10 +48,5 @@ abstract class BaseCacheQueue extends Singleton
         }
 
         return $this->updateList($list);
-    }
-
-    public static function service(): static
-    {
-        return self::getInstance();
     }
 }

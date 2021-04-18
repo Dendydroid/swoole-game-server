@@ -21,9 +21,23 @@
       <path value="$PROJECT_DIR$/app/vendor/symfony/cache" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/service-contracts" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/dotenv" />
-      <path value="$PROJECT_DIR$/app/vendor/symfony/event-dispatcher-contracts" />
-      <path value="$PROJECT_DIR$/app/vendor/symfony/event-dispatcher" />
-      <path value="$PROJECT_DIR$/app/vendor/psr/event-dispatcher" />
+      <path value="$PROJECT_DIR$/app/vendor/doctrine/persistence" />
+      <path value="$PROJECT_DIR$/app/vendor/doctrine/lexer" />
+      <path value="$PROJECT_DIR$/app/vendor/doctrine/orm" />
+      <path value="$PROJECT_DIR$/app/vendor/doctrine/inflector" />
+      <path value="$PROJECT_DIR$/app/vendor/doctrine/instantiator" />
+      <path value="$PROJECT_DIR$/app/vendor/doctrine/deprecations" />
+      <path value="$PROJECT_DIR$/app/vendor/doctrine/event-manager" />
+      <path value="$PROJECT_DIR$/app/vendor/doctrine/common" />
+      <path value="$PROJECT_DIR$/app/vendor/doctrine/dbal" />
+      <path value="$PROJECT_DIR$/app/vendor/doctrine/cache" />
+      <path value="$PROJECT_DIR$/app/vendor/doctrine/collections" />
+      <path value="$PROJECT_DIR$/app/vendor/doctrine/annotations" />
+      <path value="$PROJECT_DIR$/app/vendor/symfony/polyfill-intl-normalizer" />
+      <path value="$PROJECT_DIR$/app/vendor/symfony/string" />
+      <path value="$PROJECT_DIR$/app/vendor/symfony/console" />
+      <path value="$PROJECT_DIR$/app/vendor/symfony/polyfill-php73" />
+      <path value="$PROJECT_DIR$/app/vendor/symfony/polyfill-intl-grapheme" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0" />

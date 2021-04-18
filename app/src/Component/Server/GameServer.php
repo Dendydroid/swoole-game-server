@@ -3,7 +3,9 @@
 namespace App\Component\Server;
 
 use App\Component\Application\GameApplication;
+use App\Component\Cache\Cache;
 use App\Component\Request\Kernel;
+use App\Tcp\Constant\CacheKeys;
 use Swoole\Http\Request;
 use Swoole\WebSocket\Frame;
 use Swoole\WebSocket\Server;

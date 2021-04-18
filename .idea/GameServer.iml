@@ -21,9 +21,23 @@
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/cache" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/service-contracts" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/dotenv" />
-      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/event-dispatcher-contracts" />
-      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/event-dispatcher" />
-      <excludeFolder url="file://$MODULE_DIR$/app/vendor/psr/event-dispatcher" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/persistence" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/lexer" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/orm" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/inflector" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/instantiator" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/deprecations" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/event-manager" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/common" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/dbal" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/collections" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/doctrine/annotations" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/polyfill-intl-normalizer" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/string" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/console" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/polyfill-php73" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/polyfill-intl-grapheme" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

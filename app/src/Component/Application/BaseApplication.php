@@ -2,12 +2,13 @@
 
 namespace App\Component\Application;
 
-use App\Component\Cache\MultiThreadModel;
-use App\Component\Connection\BaseConnection;
+use App\Component\Cache\Cache;
 use App\Component\Connection\ClientConnection;
 use App\Component\Container\Container;
 use App\Component\Exception\ExceptionFormatter;
 use App\Component\Server\GameServer;
+use App\Database\Entity\User;
+use App\Tcp\Constant\CacheKeys;
 use JetBrains\PhpStorm\Pure;
 use Swoole\Http\Request;
 use Swoole\WebSocket\Server;
@@ -22,17 +23,12 @@ abstract class BaseApplication
 
     protected ContainerBuilder $servicesContainerBuilder;
 
-    /* @var array|BaseConnection[] $connections */
-    protected static array $connections = [];
-
     protected GameServer $server;
 
     public function __construct(Server $server)
     {
         $this->server = new GameServer($server);
         $this->servicesContainerBuilder = new ContainerBuilder();
-
-        static::$connections = static::getConnections();
     }
 
     #[Pure] public function getServer(): Server
@@ -45,9 +41,13 @@ abstract class BaseApplication
         return static::$container->get($key);
     }
 
-    public static function set(string $key, $value): void
+    public static function set(string $key, $value, bool $cache = false): void
     {
         static::$container->set($key, $value);
+
+        if ($cache) {
+            Cache::set($key, $value);
+        }
     }
 
     public static function has(string $key): bool
@@ -66,32 +66,48 @@ abstract class BaseApplication
         }
     }
 
-    public static function pullConnections(): void
+    public static function getConnection(int $fd): ?ClientConnection
     {
-        static::$connections = MultiThreadModel::getOrCreate("connections", function () {
-            return [];
-        });
+        /** @var ClientConnection $connection */
+        foreach (static::getConnections() as $connection) {
+            if ($connection->getFd() === $fd) {
+                return $connection;
+            }
+        }
+        return null;
     }
 
-    public static function pushConnections(): void
+    public static function getConnectionByEmail(string $email): ?ClientConnection
     {
-        $connections = static::$connections;
-
-        static::pullConnections();
-
-        MultiThreadModel::persist("connections", array_merge($connections, static::$connections));
+        $em = GameApplication::database()->getEntityManger();
+        /** @var ClientConnection $connection */
+        foreach (static::getConnections() as $connection) {
+            /** @var User|null $user */
+            $user = $em->getRepository(User::class)->find($connection->getUserId());
+            if ($user->getEmail() === $email) {
+                return $connection;
+            }
+        }
+        return null;
     }
 
-    public static function getConnection(int $fd)
+    public static function getConnectionByUserId(int $userId): ?ClientConnection
     {
-        static::pullConnections();
-        return $connections[$fd] ?? null;
+        $em = GameApplication::database()->getEntityManger();
+        /** @var ClientConnection $connection */
+        foreach (static::getConnections() as $connection) {
+            /** @var User|null $user */
+            $user = $em->getRepository(User::class)->find($connection->getUserId());
+            if ($user->getId() === $userId) {
+                return $connection;
+            }
+        }
+        return null;
     }
 
     public static function getConnections(): array
     {
-        static::pullConnections();
-        return static::$connections;
+        return static::get(CacheKeys::CONNECTIONS_KEY) ?? [];
     }
 
     public static function getContainerData(): array
@@ -101,20 +117,35 @@ abstract class BaseApplication
 
     public static function connect(Request $request, bool $force = false): void
     {
-        static::pullConnections();
-        if (isset(static::$connections[$request->fd]) && !$force) {
+        $connections = static::getConnections();
+
+        if (isset($connections[$request->fd]) && !$force) {
             error_log("Connection $request->fd already exists!");
             return;
         }
-        static::$connections[$request->fd] = new ClientConnection($request);
-        static::pushConnections();
+
+        $connections[$request->fd] = new ClientConnection($request);
+
+        static::updateConnections($connections);
+
+    }
+
+    public static function updateConnections(array $connections = null): void
+    {
+        if($connections !== null)
+        {
+            static::set(CacheKeys::CONNECTIONS_KEY, $connections, true);
+            return;
+        }
+
+        static::set(CacheKeys::CONNECTIONS_KEY, static::getConnections(), true);
     }
 
     public static function disconnect(int $fd): void
     {
-        static::pullConnections();
-        unset(static::$connections[$fd]);
-        static::pushConnections();
+        $connections = static::getConnections();
+        unset($connections[$fd]);
+        static::updateConnections($connections);
     }
 
     public function run(): void

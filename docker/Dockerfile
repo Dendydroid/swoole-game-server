@@ -34,4 +34,4 @@ RUN cd ~ && curl -sS https://getcomposer.org/installer -o composer-setup.php && 
 
 EXPOSE 8443
 
-CMD npm start
+CMD composer update && npm start

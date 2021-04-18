@@ -12,7 +12,9 @@
         "symfony/yaml": "^5.2",
         "symfony/config": "^5.2",
         "codedungeon/php-cli-colors": "^1.12",
-        "ext-memcached": "*"
+        "ext-memcached": "*",
+        "doctrine/orm": "^2.8",
+        "doctrine/annotations": "^1.12"
     },
     "description": "A game server",
     "autoload": {

@@ -2,6 +2,8 @@
 
 namespace App\Component\Cache\Serializable;
 
+use JetBrains\PhpStorm\Pure;
+
 class Command
 {
     public float $microTime;
@@ -10,7 +12,7 @@ class Command
 
     public string $fd;
 
-    public function __construct(string $input, int $fd)
+    #[Pure] public function __construct(string $input, int $fd)
     {
         $this->microTime = microtime(true);
         $this->input = $input;

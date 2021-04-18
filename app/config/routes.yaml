@@ -8,14 +8,13 @@ routes:
       controller: 'App\Tcp\Controller\MainController'
       method: 'menu'
 
-  debug:
-    get:
-      middlewares: [ 'App\Tcp\Middleware\DebugAuthenticated' ]
-      controller: 'App\Tcp\Controller\DebugController'
-      method: 'getDebug'
-
   cli:
     input:
-      middlewares: [ 'App\Tcp\Middleware\DebugAuthenticated' ]
+      middlewares: [ 'App\Tcp\Middleware\Authenticate' ]
       controller: 'App\Tcp\Controller\CommandController'
       method: 'input'
+
+  auth:
+    try:
+      controller: 'App\Tcp\Controller\AuthController'
+      method: 'authenticate'

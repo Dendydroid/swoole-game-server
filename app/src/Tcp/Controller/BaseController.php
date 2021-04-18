@@ -5,19 +5,10 @@ namespace App\Tcp\Controller;
 use App\Component\Application\GameApplication;
 use App\Component\Connection\ClientConnection;
 use App\Tcp\Helper\Json;
-use App\Tcp\Packet\BasePacket;
-use Swoole\WebSocket\Frame;
 
 abstract class BaseController
 {
-    public ?Frame $frame;
     public ?ClientConnection $connection;
-
-    public function setFrame(Frame $frame): static
-    {
-        $this->frame = $frame;
-        return $this;
-    }
 
     public function setConnection(int $fd): static
     {
@@ -28,6 +19,6 @@ abstract class BaseController
     public function response(array|string $data): void
     {
         $responseData = is_array($data) ? Json::encode($data) : $data;
-        GameApplication::app()->push($this->frame->fd, $responseData);
+        GameApplication::app()->push($this->connection->getFd(), $responseData);
     }
 }

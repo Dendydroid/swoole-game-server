@@ -176,42 +176,26 @@ Type 'help' for help.
 </div>
 
 <script src="js/reconnecting-websocket.min.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/socket.js"></script>
 <script>
-    let connection = new ReconnectingWebSocket('ws://127.0.0.1:8443/');
+
+    let socket = new Socket(
+        function onOpen() {
+        },
+        function onMessage(message) {
+            console.log("Incoming data..", message);
+            for (let listKey in message) {
+                if (render[listKey]) {
+                    render[listKey](message[listKey]);
+                } else if (listKey === 'cli-result') {
+                    consoleWindow.innerHTML += `\n${message[listKey]['text']}`;
+                }
+            }
+        }
+    );
 
     let consoleWindow = document.getElementById("console");
-
-    const debug_key = new URL(location.href).searchParams.get("pass");
-
-    connection.onopen = (event) => {
-        let req = {
-            route: `/debug/get`,
-            data: {
-                key: debug_key
-            }
-        };
-        connection.send(JSON.stringify(req));
-    }
-
-    connection.onclose = (event) => {
-    }
-
-    connection.onerror = function (event) {
-        connection.close();
-    };
-
-    connection.onmessage = function (event) {
-        let data = JSON.parse(event.data);
-        console.log("TCP data", data);
-        for (let listKey in data) {
-            if (render[listKey]) {
-                render[listKey](data[listKey]);
-            } else if (listKey === 'cli-result') {
-                consoleWindow.innerHTML += `\n${data[listKey]['text']}`;
-            }
-
-        }
-    };
 
     const render = {
         processes: function (data) {
@@ -288,20 +272,19 @@ Type 'help' for help.
                 commandIndex = -1;
             }
 
-
-            let req = {
+            socket.send({
                 route: `/cli/input`,
                 data: {
-                    input: cli.value,
-                    key: debug_key
+                    input: cli.value
                 }
-            };
-
-            connection.send(JSON.stringify(req));
+            });
 
             cli.value = "";
         } else if (event.keyCode == '18') {
             consoleWindow.innerHTML = "Type 'help' for help.\n";
+        } else if(event.keyCode == '192') {
+            cli.value = "";
+            Socket.auth.authenticate(socket);
         }
     });
 </script>

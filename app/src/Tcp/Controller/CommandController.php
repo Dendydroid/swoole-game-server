@@ -9,7 +9,6 @@ class CommandController extends BaseController
 {
     public function input(array $data): void
     {
-
-        CommandLineManager::service()->queue(new Command($data["input"], $this->connection->getFd()));
+        CommandLineManager::getInstance()->queue(new Command($data["input"], $this->connection->getFd()));
     }
 }

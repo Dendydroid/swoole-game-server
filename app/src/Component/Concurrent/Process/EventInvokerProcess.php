@@ -11,11 +11,10 @@ class EventInvokerProcess extends BaseProcess
     public function getMain(): callable
     {
         $server = GameApplication::app()->getServer();
-
         $listeners = GameApplication::get("listeners");
         return function ($process) use ($server, $listeners) {
             while (true) {
-                $events = EventManager::service()->getList();
+                $events = EventManager::getInstance()->getList();
                 if (is_array($events) && !empty($events)) {
                     foreach ($events as $event) {
                         $eventObject = unserialize($event);
@@ -26,7 +25,7 @@ class EventInvokerProcess extends BaseProcess
                                 if (array_key_exists($eventObject::class, $listener->listeningTo())) {
                                     $method = $listener->listeningTo()[$eventObject::class];
                                     if ($listener->$method($eventObject)) {
-                                        EventManager::service()->dispose($event);
+                                        EventManager::getInstance()->dispose($event);
                                     }
                                 }
                             }

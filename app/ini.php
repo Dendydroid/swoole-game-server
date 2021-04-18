@@ -4,6 +4,7 @@ define("PHP_ERROR_LOG_FILE", "./logs/php-errors.log");
 define("PHP_STDOUT_FILE", "./logs/php-stdout.log");
 define("PHP_STDERR_FILE", "./logs/php-stderr.log");
 define("SERVICES_CONFIG_FILE", "./config/services.yaml");
+define("CONFIG_PATH", "/var/www/config/dynamic");
 
 define("PROJECT_PATH", __DIR__);
 

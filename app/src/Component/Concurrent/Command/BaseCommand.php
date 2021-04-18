@@ -3,6 +3,7 @@
 namespace App\Component\Concurrent\Command;
 
 use App\Tcp\Constant\Command;
+use JetBrains\PhpStorm\ArrayShape;
 
 abstract class BaseCommand
 {
@@ -45,5 +46,12 @@ abstract class BaseCommand
                 $this->arguments[$argumentName] = $argumentValue;
             }
         }
+    }
+
+    #[ArrayShape(["text" => "string"])] public function message(string $text): array
+    {
+        return [
+            "text" => $text
+        ];
     }
 }

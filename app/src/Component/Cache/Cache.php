@@ -2,39 +2,41 @@
 
 namespace App\Component\Cache;
 
+use App\Component\Abstract\Singleton;
 use Memcached;
 
-class Cache
+class Cache extends Singleton
 {
-    protected static ?Memcached $memcached = null;
+    protected Memcached $memcached;
 
-    public static function getInstance(): Memcached
+    public function __construct()
     {
-        if (static::$memcached === null) {
-            static::$memcached = new Memcached();
-            static::$memcached->addServer('cache', 11211);
-        }
+        $this->memcached = new Memcached();
+        $this->memcached->addServer('cache', 11211);
+    }
 
-        return static::$memcached;
+    public function storage(): Memcached
+    {
+        return $this->memcached;
     }
 
     public static function get(string $key)
     {
-        return static::getInstance()->get($key);
+        return static::getInstance()->storage()->get($key);
     }
 
     public static function set(string $key, $value): bool
     {
-        return static::getInstance()->set($key, $value);
+        return static::getInstance()->storage()->set($key, $value);
     }
 
     public static function delete(string $key): bool
     {
-        return static::getInstance()->delete($key);
+        return static::getInstance()->storage()->delete($key);
     }
 
     public static function keys(): bool|array
     {
-        return static::getInstance()->getAllKeys();
+        return static::getInstance()->storage()->getAllKeys();
     }
 }

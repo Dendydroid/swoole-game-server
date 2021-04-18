@@ -5,7 +5,8 @@ namespace App\Component\Concurrent\Command;
 class HelpCommand extends BaseCommand
 {
     public array $help = [
-        "?" => "This is the CLI for the Game Server :)"
+        "register" => "This command is for registering a user. register e=<email> p=<password>",
+        "*" => "List of commands:\n- register\n"
     ];
 
     private function getHelpText(string $command)
@@ -21,7 +22,7 @@ class HelpCommand extends BaseCommand
     public function handle(): array
     {
 
-        $for = $this->get("for");
+        $for = $this->get("?");
 
         if ($for !== '') {
             return [
@@ -29,7 +30,7 @@ class HelpCommand extends BaseCommand
             ];
         }
         return [
-            "text" => "You have to specify a `for` argument like so (for command `start`): \nhelp for=start"
+            "text" => "You have to specify a `?` argument like so (for command `start`): \nhelp ?=start"
         ];
     }
 

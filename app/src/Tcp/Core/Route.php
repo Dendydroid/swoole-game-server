@@ -60,8 +60,7 @@ class Route
     public function middlewareResults(array $data): Generator
     {
         /* @var BaseMiddleware $middleware */
-        foreach ($this->middlewares as $middleware)
-        {
+        foreach ($this->middlewares as $middleware) {
             yield $middleware($data);
         }
     }

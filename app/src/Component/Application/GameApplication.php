@@ -2,11 +2,16 @@
 
 namespace App\Component\Application;
 
+use App\Component\Config\Config;
+use App\Database\Database;
+
 /**
  * @method static GameApplication app()
- * @method static GameApplication processes()
- * @method static GameApplication listeners()
- * @method static GameApplication commands()
+ * @method static array processes()
+ * @method static array listeners()
+ * @method static array commands()
+ * @method static Config config()
+ * @method static Database database()
  */
 class GameApplication extends BaseApplication
 {

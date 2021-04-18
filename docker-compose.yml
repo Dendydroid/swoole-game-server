@@ -8,10 +8,12 @@ services:
       - 8443:8443
     volumes:
       - './app:/var/www'
+      - './.env:/var/www/.env'
     stdin_open: true
     tty: true
     depends_on:
       - cache
+      - db
 
   cache:
     image: memcached
@@ -27,7 +29,11 @@ services:
     image: postgres
     restart: always
     environment:
-      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DATABASE_DB}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - ./docker/data/db:/var/lib/postgresql/data
     ports:
       - 5432:5432
 

@@ -44,8 +44,9 @@ class Kernel
 
             $route = $this->findRoute($request);
 
-            foreach ($route->middlewareResults($requestData) as $valid) {
-                if (!$valid) {
+            foreach ($route->middlewareResults($request) as $valid) {
+                if (!empty($valid)) {
+                    GameApplication::app()->push($frame->fd, Json::encode($valid));
                     return;
                 }
             }
@@ -53,7 +54,6 @@ class Kernel
             $method = $route->getMethod();
 
             $route->getController()
-                ->setFrame($frame)
                 ->setConnection($frame->fd)
                 ->$method($requestData);
 

@@ -13,7 +13,7 @@ class LoadPacket extends BasePacket
     public function __construct(array $data)
     {
         parent::__construct();
-        $this->action = self::ACTION_NAME;
+        $this->action = static::ACTION_NAME;
         $this->data = $data;
     }
 }

@@ -2,27 +2,23 @@
 
 namespace App\Component\Cache;
 
-class MultiThreadModel
+abstract class MultiThreadModel
 {
-    public static function get(string $key)
-    {
-        return Cache::get($key);
-    }
+    abstract public function getKey(): string;
 
-    public static function getOrCreate(string $key, callable $init, bool $forceRecreate = false)
+    public function get($default = null)
     {
-        $item = Cache::get($key);
+        $data = Cache::get($this->getKey());
 
-        if($forceRecreate || is_bool($item))
-        {
-            $item = $init();
+        if (is_bool($data)) {
+            return $default;
         }
 
-        return $item;
+        return $data;
     }
 
-    public static function persist(string $key, $data): bool
+    public function set($value): bool
     {
-        return Cache::set($key, $data);
+        return Cache::set($this->getKey(), $value);
     }
 }

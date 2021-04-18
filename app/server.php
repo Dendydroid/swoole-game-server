@@ -2,7 +2,7 @@
 
 require_once "vendor/autoload.php";
 
-use App\Component\Cache\MultiThreadModel;
+use App\Component\Cache\MultiThread\Server;
 use Swoole\WebSocket\Server as SocketServer;
 
 $server = null;
@@ -11,9 +11,12 @@ $createServer = static function() {
     return new SocketServer("0.0.0.0", 8443);
 };
 
+$cachedServer = new Server();
+
 while (!($server instanceof SocketServer)) {
     try {
-        $server = MultiThreadModel::getOrCreate(SocketServer::class, $createServer);
+        $server = $cachedServer->get() ?? $createServer();
+        $cachedServer->set($server);
     } catch (Throwable $exception) {
         if ($exception->getCode() === ERROR_ADDRESS_IN_USE) {
             usleep(SERVER_RESTART_TIMEOUT);
