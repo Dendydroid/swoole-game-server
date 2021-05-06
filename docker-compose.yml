@@ -1,7 +1,10 @@
 version: '3.1'
 
-services:
+networks:
+  app-network:
+    driver: bridge
 
+services:
   php-server:
     image: dendydroid/game-server
     ports:
@@ -14,6 +17,65 @@ services:
     depends_on:
       - cache
       - db
+    networks:
+      - app-network
+
+  php-http:
+    build:
+      context: ./http
+      dockerfile: Dockerfile
+    image: dendydroid/php-nodejs
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - './http:/var/www'
+    environment:
+      SERVICE_NAME: php-http
+      SERVICE_TAGS: dev
+    working_dir: /var/www
+    networks:
+      - app-network
+
+  web:
+    image: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    expose:
+      - 80
+      - 443
+    volumes:
+      - './http:/var/www'
+      - './docker/config/nginx.conf:/etc/nginx/nginx.conf'
+      - './docker/config/sites-available:/etc/nginx/sites-available'
+      - './docker/certs:/etc/ssl/certs'
+      - './docker/private:/etc/ssl/private'
+    networks:
+      - app-network
+    depends_on:
+      - php-http
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: ${DATABASE_DB}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - './docker/data/db:/var/lib/postgresql/data'
+    ports:
+      - 5432:5432
+    networks:
+      - app-network
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - app-network
 
   cache:
     image: memcached
@@ -24,33 +86,3 @@ services:
     entrypoint:
       - memcached
       - -m 1024
-
-  db:
-    image: postgres
-    restart: always
-    environment:
-      POSTGRES_DB: ${DATABASE_DB}
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-    volumes:
-      - ./docker/data/db:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
-
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
-
-  client:
-    image: dendydroid/node-ssl-server
-    volumes:
-      - ./docker/node-ssl-server/src:/var/www/
-      - ./docker/node-ssl-server/certs:/etc/ssl/certs
-      - ./docker/node-ssl-server/private:/etc/ssl/private
-      - ./app/public:/var/www/public
-    ports:
-      - 443:443
-    expose:
-      - 443

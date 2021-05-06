@@ -68,7 +68,6 @@ class AuthService
 
     public function flushOldTokens(): void
     {
-
         $connections = Cache::get(CacheKeys::CONNECTIONS_KEY);
 
         if (is_bool($connections)) {

@@ -18,7 +18,7 @@ class AuthController extends BaseController
         /** @var User|null $user */
         $user = $em->getRepository(User::class)->findOneBy(["email" => $email]);
 
-        if ($user && AuthStrategy::validPassword($password, $user->getPassword())) {
+        if ($user && AuthStrategy::validPassword($password, $user->getAuthPassword())) {
             $auth = new AuthService();
             $token = $auth->generateToken($user->getId());
             $this->connection->setUserId($user->getId());

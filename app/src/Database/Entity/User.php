@@ -2,6 +2,9 @@
 
 namespace App\Database\Entity;
 
+use App\Database\Entity\Trait\Authenticates;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -10,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User
 {
+    use Authenticates;
     /**
      * @ORM\Id
      * @ORM\Column(type="integer")
@@ -18,9 +22,20 @@ class User
     private ?int $id;
 
     /**
+     * @ORM\ManyToOne(targetEntity=Role::class)
+     * @ORM\JoinColumn(name="role_id", referencedColumnName="id")
+     */
+    private Role $role;
+
+    /**
      * @ORM\Column(type="string", unique=true)
      */
     private ?string $email;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $phone;
 
     /**
      * @ORM\Column(type="integer", nullable=false)
@@ -28,13 +43,20 @@ class User
     private ?int $ts;
 
     /**
-     * @ORM\Column(type="string", nullable=false)
+     * @var Collection|Profile[] $profiles
+     * @ORM\OneToMany(targetEntity=Profile::class, mappedBy="user")
      */
-    private ?string $password;
+    private $profiles;
 
     public function __construct()
     {
+        $this->profiles = new ArrayCollection();
         $this->ts = time();
+    }
+
+    public function getAuthIdentifierName(): string
+    {
+        return "id";
     }
 
     public function getId(): ?int
@@ -53,19 +75,30 @@ class User
         return $this;
     }
 
-    public function getPassword(): ?string
+    public function getPhone(): ?string
     {
-        return $this->password;
+        return $this->phone;
     }
 
-    public function setPassword(?string $password): static
+    public function setPhone(?string $phone): static
     {
-        $this->password = $password;
+        $this->phone = $phone;
         return $this;
     }
 
     public function getTs(): ?int
     {
         return $this->ts;
+    }
+
+    public function getRole(): Role
+    {
+        return $this->role;
+    }
+
+    public function setRole(Role $role): static
+    {
+        $this->role = $role;
+        return $this;
     }
 }

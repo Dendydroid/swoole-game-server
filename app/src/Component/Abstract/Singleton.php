@@ -26,4 +26,9 @@ abstract class Singleton
 
         return static::$instances[$class];
     }
+
+    public static function getInstances(): array
+    {
+        return static::$instances;
+    }
 }

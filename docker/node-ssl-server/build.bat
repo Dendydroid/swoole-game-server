@@ -1,1 +1,0 @@
-docker build -t dendydroid/node-ssl-server .

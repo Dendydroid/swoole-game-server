@@ -2,10 +2,12 @@
 
 namespace App\Component\Concurrent\Process;
 
+use App\Component\Abstract\Singleton;
 use App\Component\Application\GameApplication;
 use App\Component\Cache\Cache;
 use App\Component\Concurrent\Listener\BaseListener;
 use App\Component\Connection\ClientConnection;
+use App\Component\Enum\UserRoleEnum;
 use App\Database\Entity\User;
 use App\Tcp\Constant\CacheKeys;
 use App\Tcp\Helper\Json;
@@ -19,19 +21,22 @@ class DebugPingProcess extends BaseProcess
             while (true) {
                 sleep(1);
                 $connections = Cache::get(CacheKeys::CONNECTIONS_KEY);
+                dump("instances", [Singleton::getInstances()]);
+                dump("allconnections", [$connections]);
                 if (!empty($connections) && !is_bool($connections)) {
-                    $adminEmail = "taras.galatsiuk@gmail.com";
                     $processes = [];
                     $listeners = [];
                     $container = [];
 
-                    $em = GameApplication::database()->getEntityManger();
                     /** @var ClientConnection $connection */
                     foreach ($connections as $connection) {
+                        dump("cnc", [$connection]);
+
+                        $em = $app::database()->getEntityManger();
                         /** @var User|null $user */
                         $user = $em->getRepository(User::class)->find($connection->getUserId());
-
-                        if ($user && $user->getEmail() === $adminEmail) {
+                        dump("user", [$user]);
+                        if ($user && $user->getRole() === UserRoleEnum::ROLE_ADMIN) {
                             /** @var BaseProcess $pr */
                             foreach ($app::processes() as $pr) {
                                 $processes[] = [

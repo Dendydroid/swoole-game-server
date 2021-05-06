@@ -4,7 +4,6 @@ namespace App\Tcp\Packet;
 
 use App\Tcp\Helper\Id;
 use App\Tcp\Helper\Json;
-use Symfony\Component\Uid\Uuid;
 
 abstract class BasePacket
 {
