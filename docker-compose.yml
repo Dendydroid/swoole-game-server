@@ -12,6 +12,7 @@ services:
     volumes:
       - './app:/var/www'
       - './.env:/var/www/.env'
+      - './docker/cli/validate_php.sh:/usr/local/bin/validate_php'
     stdin_open: true
     tty: true
     depends_on:

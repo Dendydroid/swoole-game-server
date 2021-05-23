@@ -38,6 +38,8 @@
       <path value="$PROJECT_DIR$/app/vendor/symfony/console" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/polyfill-php73" />
       <path value="$PROJECT_DIR$/app/vendor/symfony/polyfill-intl-grapheme" />
+      <path value="$PROJECT_DIR$/app/vendor/psr/cache" />
+      <path value="$PROJECT_DIR$/app/vendor/squizlabs/php_codesniffer" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0" />

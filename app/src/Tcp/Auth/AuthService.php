@@ -2,44 +2,46 @@
 
 namespace App\Tcp\Auth;
 
-use App\Component\Application\GameApplication;
-use App\Component\Cache\Cache;
-use App\Component\Cache\MultiThread\Tokens;
 use App\Component\Cache\Serializable\Token;
+use App\Component\Config\Config;
+use App\Component\Service\SharedConnections;
+use App\Component\Service\SharedTokens;
 use App\Database\Entity\User;
 use App\Database\Traits\DatabaseAccess;
-use App\Tcp\Constant\CacheKeys;
 use App\Tcp\Helper\Id;
-use JetBrains\PhpStorm\Pure;
 
 class AuthService
 {
     use DatabaseAccess;
 
-    protected Tokens $tokenStorage;
+    protected SharedTokens $tokenStorage;
+    protected SharedConnections $sharedConnections;
+    protected Config $config;
 
-    #[Pure] public function __construct()
+    public function __construct()
     {
-        $this->tokenStorage = new Tokens();
+        $this->tokenStorage = new SharedTokens();
+        $this->sharedConnections = new SharedConnections();
+        $this->config = Config::getInstance()->setConfigFolder(CONFIG_DATA_PATH)->load();
     }
 
     /* Generate token for user and add store it */
     public function generateToken(int $userId): string
     {
-        $ttl = GameApplication::config()->get("cache")["ttl"] ?? 5;
-        $tokens = $this->tokenStorage->get([]);
+        $ttl = $this->config->get("cache")["ttl"] ?? 5;
+        $tokens = $this->tokenStorage->getTokens();
         $token = new Token();
         $token->userId = $userId;
         $token->token = Id::generateId($userId . microtime());
         $token->maxAge = $ttl;
         $tokens[] = $token;
-        $this->tokenStorage->set($tokens);
+        $this->tokenStorage->setTokens($tokens);
         return $token->token;
     }
 
     public function findToken(string $token): ?Token
     {
-        $tokens = $this->tokenStorage->get([]);
+        $tokens = $this->tokenStorage->getTokens();
         /** @var Token $storedToken */
         foreach ($tokens as $storedToken) {
             if ($token === $storedToken->token) {
@@ -68,25 +70,13 @@ class AuthService
 
     public function flushOldTokens(): void
     {
-        $connections = Cache::get(CacheKeys::CONNECTIONS_KEY);
-
-        if (is_bool($connections)) {
-            $connections = [];
-        }
-
-        GameApplication::updateConnections($connections);
-
-        $tokens = $this->tokenStorage->get([]);
+        $tokens = $this->tokenStorage->getTokens();
         foreach ($tokens as $key => $storedToken) {
             if (($storedToken->ts + $storedToken->maxAge) < time()) {
-                $tokenConnection = GameApplication::getConnectionByUserId($storedToken->userId);
-                if ($tokenConnection) {
-                    $tokenConnection->setUserId(0);
-                    GameApplication::updateConnections();
-                }
+                $tokenConnection = $this->sharedConnections->logoutConnectionByUserId($storedToken->userId);
                 unset($tokens[$key]);
             }
         }
-        $this->tokenStorage->set($tokens);
+        $this->tokenStorage->setTokens($tokens);
     }
 }

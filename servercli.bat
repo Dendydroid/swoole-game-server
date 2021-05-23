@@ -1,0 +1,1 @@
+docker exec -it "gameserver_php-server_1" bash

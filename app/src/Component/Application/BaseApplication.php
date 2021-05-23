@@ -2,13 +2,14 @@
 
 namespace App\Component\Application;
 
-use App\Component\Cache\Cache;
 use App\Component\Connection\ClientConnection;
 use App\Component\Container\Container;
 use App\Component\Exception\ExceptionFormatter;
 use App\Component\Server\GameServer;
+use App\Component\Service\SharedApplicationData;
+use App\Component\Service\SharedConnections;
+use App\Component\Service\SharedContainer;
 use App\Database\Entity\User;
-use App\Tcp\Constant\CacheKeys;
 use JetBrains\PhpStorm\Pure;
 use Swoole\Http\Request;
 use Swoole\WebSocket\Server;
@@ -19,7 +20,13 @@ use Throwable;
 
 abstract class BaseApplication
 {
-    protected static Container $container;
+    protected Container $container;
+
+    protected SharedConnections $connections;
+
+    protected SharedApplicationData $appData;
+
+    protected SharedContainer $sharedContainer;
 
     protected ContainerBuilder $servicesContainerBuilder;
 
@@ -29,6 +36,10 @@ abstract class BaseApplication
     {
         $this->server = new GameServer($server);
         $this->servicesContainerBuilder = new ContainerBuilder();
+        $this->connections = new SharedConnections();
+        $this->appData = new SharedApplicationData();
+        $this->sharedContainer = new SharedContainer();
+        $this->connections->setConnections([]);
     }
 
     #[Pure] public function getServer(): Server
@@ -36,28 +47,32 @@ abstract class BaseApplication
         return $this->server->getServer();
     }
 
-    public static function get(string $key): mixed
+    public function appData(): SharedApplicationData
     {
-        return static::$container->get($key);
+        return $this->appData;
     }
 
-    public static function set(string $key, $value, bool $cache = false): void
+    public function get(string $key): mixed
     {
-        static::$container->set($key, $value);
+        return $this->container->get($key);
+    }
 
-        if ($cache) {
-            Cache::set($key, $value);
+    public function set(string $key, $value, bool $share = true): void
+    {
+        $this->container->set($key, $value);
+        if ($share) {
+            $this->sharedContainer->setContainer($this->container);
         }
     }
 
-    public static function has(string $key): bool
+    public function has(string $key): bool
     {
-        return static::$container->has($key);
+        return $this->container->has($key);
     }
 
     public function loadServices(string $path): void
     {
-        static::$container = new Container();
+        $this->container = new Container();
         try {
             $loader = new YamlFileLoader($this->servicesContainerBuilder, new FileLocator(PROJECT_PATH));
             $loader->load($path);
@@ -66,10 +81,15 @@ abstract class BaseApplication
         }
     }
 
-    public static function getConnection(int $fd): ?ClientConnection
+    public function getSharedConnections(): SharedConnections
+    {
+        return $this->connections;
+    }
+
+    public function getConnection(int $fd): ?ClientConnection
     {
         /** @var ClientConnection $connection */
-        foreach (static::getConnections() as $connection) {
+        foreach ($this->getConnections() as $connection) {
             if ($connection->getFd() === $fd) {
                 return $connection;
             }
@@ -77,11 +97,11 @@ abstract class BaseApplication
         return null;
     }
 
-    public static function getConnectionByEmail(string $email): ?ClientConnection
+    public function getConnectionByEmail(string $email): ?ClientConnection
     {
         $em = GameApplication::database()->getEntityManger();
         /** @var ClientConnection $connection */
-        foreach (static::getConnections() as $connection) {
+        foreach ($this->getConnections() as $connection) {
             /** @var User|null $user */
             $user = $em->getRepository(User::class)->find($connection->getUserId());
             if ($user->getEmail() === $email) {
@@ -91,11 +111,11 @@ abstract class BaseApplication
         return null;
     }
 
-    public static function getConnectionByUserId(int $userId): ?ClientConnection
+    public function getConnectionByUserId(int $userId): ?ClientConnection
     {
         $em = GameApplication::database()->getEntityManger();
         /** @var ClientConnection $connection */
-        foreach (static::getConnections() as $connection) {
+        foreach ($this->getConnections() as $connection) {
             /** @var User|null $user */
             $user = $em->getRepository(User::class)->find($connection->getUserId());
             if ($user->getId() === $userId) {
@@ -105,47 +125,35 @@ abstract class BaseApplication
         return null;
     }
 
-    public static function getConnections(): array
+    public function getConnections(): ?array
     {
-        return static::get(CacheKeys::CONNECTIONS_KEY) ?? [];
+        return $this->connections->getConnections();
     }
 
-    public static function getContainerData(): array
+    public function getContainerData(): array
     {
-        return static::$container->all();
+        return $this->container->all();
     }
 
-    public static function connect(Request $request, bool $force = false): void
+    public function connect(Request $request, bool $force = false): void
     {
-        $connections = static::getConnections();
-
+        $connections = $this->getConnections() ?? [];
         if (isset($connections[$request->fd]) && !$force) {
             error_log("Connection $request->fd already exists!");
             return;
         }
 
         $connections[$request->fd] = new ClientConnection($request);
+        $this->connections->setConnections($connections);
 
-        static::updateConnections($connections);
-
+        dump("connections", $connections, $this->getConnections());
     }
 
-    public static function updateConnections(array $connections = null): void
+    public function disconnect(int $fd): void
     {
-        if($connections !== null)
-        {
-            static::set(CacheKeys::CONNECTIONS_KEY, $connections, true);
-            return;
-        }
-
-        static::set(CacheKeys::CONNECTIONS_KEY, static::getConnections(), true);
-    }
-
-    public static function disconnect(int $fd): void
-    {
-        $connections = static::getConnections();
+        $connections = $this->getConnections() ?? [];
         unset($connections[$fd]);
-        static::updateConnections($connections);
+        $this->connections->setConnections($connections);
     }
 
     public function run(): void

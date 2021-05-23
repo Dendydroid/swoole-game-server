@@ -21,8 +21,10 @@ class AuthController extends BaseController
         if ($user && AuthStrategy::validPassword($password, $user->getAuthPassword())) {
             $auth = new AuthService();
             $token = $auth->generateToken($user->getId());
-            $this->connection->setUserId($user->getId());
-            GameApplication::updateConnections();
+            $app = GameApplication::app();
+            if ($app) {
+                $app->getSharedConnections()->loginConnectionByUserId($this->connection->getFd(), $user->getId());
+            }
             $this->response(["token" => $token]);
         }
     }

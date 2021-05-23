@@ -22,7 +22,7 @@ $dotenv->load(realpath(__DIR__ . '/.env'));
 define("DEBUG_MODE", $_ENV['DEBUG_MODE'] ?? false);
 
 /* @var SocketServer $server */
-$server = include_once("server.php");
+$server = include("server.php");
 
 $app = new GameApplication($server);
 
@@ -32,17 +32,17 @@ $config = Config::getInstance()->setConfigFolder(CONFIG_PATH)->load();
 
 $database = Database::getInstance();
 
-GameApplication::set("config", $config);
+$app->appData()->setKey("config", $config);
 
-GameApplication::set("database", $database);
+$app->set("database", $database);
 
-GameApplication::set("app", $app);
+GameApplication::$app = $app;
 
 $listeners = [
     new TestListener(),
 ];
 
-GameApplication::set("listeners", $listeners);
+$app->appData()->setKey("listeners", $listeners);
 
 $processes = [
 //    new EventInvokerProcess(),
@@ -51,17 +51,19 @@ $processes = [
     new CacheCleanerProcess(),
 ];
 
+$processClasses = [];
 foreach ($processes as $process) {
+    $processClasses[] = $process::class;
     $app->getServer()->addProcess($process);
 }
 
-GameApplication::set("processes", $processes);
+$app->appData()->setKey("processes", $processClasses);
 
 $commands = [
     new DoctrineGenerate(),
     new RegisterUserCommand(),
 ];
 
-GameApplication::set("commands", $commands);
+$app->appData()->setKey("commands", $commands);
 
 $app->run();

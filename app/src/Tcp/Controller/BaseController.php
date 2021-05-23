@@ -12,13 +12,19 @@ abstract class BaseController
 
     public function setConnection(int $fd): static
     {
-        $this->connection = GameApplication::getConnection($fd);
+        $app = GameApplication::app();
+        if ($app) {
+            $this->connection = $app->getConnection($fd);
+        }
         return $this;
     }
 
     public function response(array|string $data): void
     {
-        $responseData = is_array($data) ? Json::encode($data) : $data;
-        GameApplication::app()->push($this->connection->getFd(), $responseData);
+        $app = GameApplication::app();
+        if ($app) {
+            $responseData = is_array($data) ? Json::encode($data) : $data;
+            $app->push($this->connection->getFd(), $responseData);
+        }
     }
 }

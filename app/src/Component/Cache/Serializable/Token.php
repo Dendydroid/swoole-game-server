@@ -16,5 +16,4 @@ class Token
     {
         $this->ts = time();
     }
-
 }

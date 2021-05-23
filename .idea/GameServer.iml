@@ -38,6 +38,8 @@
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/console" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/polyfill-php73" />
       <excludeFolder url="file://$MODULE_DIR$/app/vendor/symfony/polyfill-intl-grapheme" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/psr/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/app/vendor/squizlabs/php_codesniffer" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

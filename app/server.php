@@ -2,21 +2,21 @@
 
 require_once "vendor/autoload.php";
 
-use App\Component\Cache\MultiThread\Server;
+use App\Component\Service\SharedServer;
 use Swoole\WebSocket\Server as SocketServer;
 
 $server = null;
 
-$createServer = static function() {
+$createServer = static function () {
     return new SocketServer("0.0.0.0", 8443);
 };
 
-$cachedServer = new Server();
+$cachedServer = new SharedServer();
 
 while (!($server instanceof SocketServer)) {
     try {
-        $server = $cachedServer->get() ?? $createServer();
-        $cachedServer->set($server);
+        $server = $cachedServer?->getServer()?->getServer() ?? $createServer();
+        $cachedServer->setServer($server);
     } catch (Throwable $exception) {
         if ($exception->getCode() === ERROR_ADDRESS_IN_USE) {
             usleep(SERVER_RESTART_TIMEOUT);

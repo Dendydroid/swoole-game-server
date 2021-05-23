@@ -9,7 +9,6 @@
   "restartable": "r",
   "ext": "php",
   "events":{
-    "crash": "killall php",
     "restart": "killall php"
   }
 }

@@ -2,62 +2,70 @@
 
 namespace App\Component\Concurrent\Process;
 
-use App\Component\Abstract\Singleton;
 use App\Component\Application\GameApplication;
 use App\Component\Cache\Cache;
 use App\Component\Concurrent\Listener\BaseListener;
 use App\Component\Connection\ClientConnection;
 use App\Component\Enum\UserRoleEnum;
+use App\Component\Service\SharedApplicationData;
+use App\Component\Service\SharedConnections;
+use App\Component\Service\SharedContainer;
+use App\Component\Service\SharedServer;
+use App\Database\Database;
 use App\Database\Entity\User;
-use App\Tcp\Constant\CacheKeys;
 use App\Tcp\Helper\Json;
 
 class DebugPingProcess extends BaseProcess
 {
     public function getMain(): callable
     {
-        $app = GameApplication::app();
-        return function ($process) use ($app) {
+        return function ($process) {
             while (true) {
                 sleep(1);
-                $connections = Cache::get(CacheKeys::CONNECTIONS_KEY);
-                dump("instances", [Singleton::getInstances()]);
-                dump("allconnections", [$connections]);
-                if (!empty($connections) && !is_bool($connections)) {
+                $connections = new SharedConnections();
+                $connectionList = $connections->getConnections();
+                if (!empty($connectionList) && !is_bool($connectionList)) {
                     $processes = [];
                     $listeners = [];
                     $container = [];
 
                     /** @var ClientConnection $connection */
-                    foreach ($connections as $connection) {
-                        dump("cnc", [$connection]);
-
-                        $em = $app::database()->getEntityManger();
+                    foreach ($connectionList as $connection) {
+                        $database = Database::getInstance();
+                        $em = $database->getEntityManger();
                         /** @var User|null $user */
                         $user = $em->getRepository(User::class)->find($connection->getUserId());
-                        dump("user", [$user]);
                         if ($user && $user->getRole() === UserRoleEnum::ROLE_ADMIN) {
+
+                            $appData = new SharedApplicationData();
+
                             /** @var BaseProcess $pr */
-                            foreach ($app::processes() as $pr) {
+                            foreach ($appData->getData()->processes as $pr) {
                                 $processes[] = [
                                     "name" => $pr->getProcessName()
                                 ];
                             }
 
                             /** @var BaseListener $listener */
-                            foreach ($app::listeners() as $listener) {
+                            foreach ($appData->getData()->listeners as $listener) {
                                 $listeners[] = [
                                     "name" => $listener::class,
                                     "listens" => $listener->listeningTo(),
                                 ];
                             }
 
-                            foreach ($app::getContainerData() as $key => $value) {
-                                $container[] = [
-                                    "key" => $key,
-                                    "value" => $value
-                                ];
+                            $sharedContainer = new SharedContainer();
+                            $container = $sharedContainer->getContainer();
+
+                            if ($container !== null) {
+                                foreach ($container->all() as $key => $value) {
+                                    $container[] = [
+                                        "key" => $key,
+                                        "value" => $value
+                                    ];
+                                }
                             }
+
 
                             $cache = [];
 
@@ -70,7 +78,7 @@ class DebugPingProcess extends BaseProcess
 
                             $connectionArray = [];
 
-                            foreach ($connections as $c) {
+                            foreach ($connectionList as $c) {
                                 $connectionArray[] = [
                                     "User ID" => $c->getUserId(),
                                     "FD" => $c->getFd(),
@@ -79,19 +87,24 @@ class DebugPingProcess extends BaseProcess
                                 ];
                             }
 
-                            $app->push($connection->getFd(), Json::encode([
-                                "processes" => $processes,
-                                "listeners" => $listeners,
-                                "connections" => $connectionArray,
-                                "container" => $container,
-                                "cache" => $cache,
-                            ]));
+                            $server = (new SharedServer())->getServer();
+
+                            if ($server) {
+                                $server->getServer()->push($connection->getFd(), Json::encode([
+                                    "processes" => $processes,
+                                    "listeners" => $listeners,
+                                    "connections" => $connectionArray,
+                                    "container" => $container,
+                                    "cache" => $cache,
+                                ]));
+                            }
 
                             break;
                         }
                     }
                 }
             }
+
         };
     }
 }

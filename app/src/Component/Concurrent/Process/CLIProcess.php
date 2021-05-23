@@ -2,11 +2,12 @@
 
 namespace App\Component\Concurrent\Process;
 
-use App\Component\Application\GameApplication;
 use App\Component\Cache\Manager\CommandLineManager;
 use App\Component\Cache\Serializable\Command;
 use App\Component\Concurrent\Command\BaseCommand;
 use App\Component\Exception\ExceptionFormatter;
+use App\Component\Service\SharedApplicationData;
+use App\Component\Service\SharedServer;
 use App\Tcp\Helper\Json;
 use Throwable;
 
@@ -26,24 +27,31 @@ class CLIProcess extends BaseProcess
 
                             $commandObject->found = false;
 
+                            $appData = new SharedApplicationData();
+                            $server = (new SharedServer())->getServer();
+                            if ($server !== null) {
+                                $server = $server->getServer();
+                            }
                             /** @var BaseCommand $command */
-                            foreach (GameApplication::commands() as $command) {
+                            foreach ($appData->getData()->commands as $command) {
                                 $command->bufferClear();
                                 $command->input($commandObject->input);
                                 if ($command->validCommand()) {
                                     $commandObject->found = true;
                                     $command->extractArguments();
                                     $result = $command->handle();
-                                    GameApplication::app()->push($commandObject->fd, Json::encode([
-                                        "cli-result" => $result
-                                    ]));
+                                    if ($server !== null) {
+                                        $server->push($commandObject->fd, Json::encode([
+                                            "cli-result" => $result
+                                        ]));
+                                    }
                                     break;
                                 }
                             }
 
                             if (!$commandObject->found) {
                                 $cmd = explode(" ", trim($commandObject->input))[0];
-                                GameApplication::app()->push($commandObject->fd, Json::encode([
+                                $server->push($commandObject->fd, Json::encode([
                                     "cli-result" => [
                                         "text" => "Unknown command '$cmd'"
                                     ]

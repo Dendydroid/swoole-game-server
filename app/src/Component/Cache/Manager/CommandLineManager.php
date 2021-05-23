@@ -10,5 +10,4 @@ class CommandLineManager extends BaseCacheQueue
     {
         return CacheKeys::COMMAND_MANAGER_KEY;
     }
-
 }
